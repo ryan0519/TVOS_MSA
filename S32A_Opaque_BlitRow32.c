@@ -131,9 +131,9 @@ int testCase(char* idx, int count )
 	char f2name[500] = {0};
 	char oname[500]  = {0};
 
-	sprintf(f1name, "BlitRow/s1data%s.raw", idx);
-	sprintf(f2name, "BlitRow/s2data%s.raw", idx);
-	sprintf(oname,  "BlitRow/odata%s.raw", idx);
+	sprintf(f1name, "br/s1data%s.raw", idx);
+	sprintf(f2name, "br/s2data%s.raw", idx);
+	sprintf(oname,  "br/odata%s.raw", idx);
 
 	fd = fopen(f1name, "rb");
 	fread((void*)src1, 1, count*sizeof(uint32_t), fd);

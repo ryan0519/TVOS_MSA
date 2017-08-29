@@ -184,9 +184,9 @@ int testCase(char* idx , int count)
 	char f2name[500] = {0};
 	char oname[500]  = {0};
 
-	sprintf(f1name, "shaderproc/p1data%s.raw", idx);
-	sprintf(f2name, "shaderproc/p2data%s.raw", idx);
-	sprintf(oname,  "shaderproc/opdata%s.raw", idx);
+	sprintf(f1name, "sp/p1data%s.raw", idx);
+	sprintf(f2name, "sp/p2data%s.raw", idx);
+	sprintf(oname,  "sp/opdata%s.raw", idx);
 
 	fd = fopen(f1name, "rb");
 	fread((void*)src1, 1, count*sizeof(uint32_t), fd);

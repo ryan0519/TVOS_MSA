@@ -148,9 +148,9 @@ int testCase(char* idx, int count)
     char f2name[500] = {0};
     char oname[500]  = {0};
 
-	sprintf(f1name, "memset/m1data%s.raw", idx);
-	sprintf(f2name, "memset/m2data%s.raw", idx);
-	sprintf(oname,  "memset/omdata%s.raw", idx);
+	sprintf(f1name, "mt/m1data%s.raw", idx);
+	sprintf(f2name, "mt/m2data%s.raw", idx);
+	sprintf(oname,  "mt/omdata%s.raw", idx);
 
     fd = fopen(f1name, "rb");
     fread((void*)outMSA, 1, count*sizeof(uint32_t), fd);

@@ -1,7 +1,7 @@
 
 
 obj = S32A_Opaque_BlitRow32 DX_shaderproc_part sk_memset32
-source = S32A_Opaque_BlitRow32_speedup20170822.c DX_shaderproc_part_speedup20170812.c sk_memset32_speedup20170823.c
+source = S32A_Opaque_BlitRow32.c DX_shaderproc_part.c sk_memset32.c
 
 CC     = mips-img-linux-gnu-gcc 
 CFLAGS = -mmsa -mips32r6 -EL -static 
@@ -16,9 +16,9 @@ all: $(obj) exec
 
 
 $(obj): $(source) 
-	$(CC) $(CFLAGS) S32A_Opaque_BlitRow32_speedup20170822.c -o S32A_Opaque_BlitRow32
-	$(CC) $(CFLAGS) DX_shaderproc_part_speedup20170812.c -o Dx_shaderproc_part
-	$(CC) $(CFLAGS) sk_memset32_speedup20170823.c -o sk_memset32
+	$(CC) $(CFLAGS) S32A_Opaque_BlitRow32.c -o S32A_Opaque_BlitRow32
+	$(CC) $(CFLAGS) DX_shaderproc_part.c -o Dx_shaderproc_part
+	$(CC) $(CFLAGS) sk_memset32.c -o sk_memset32
 
 
 exec:
