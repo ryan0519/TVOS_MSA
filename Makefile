@@ -36,6 +36,8 @@ exec:
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(EXECFLAGS) sk_memset32 -idx 3 -count 1016
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(EXECFLAGS) sk_memset32 -idx 56 -count 348
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(EXECFLAGS) ConvolveHorizontally -idx 33
+	$(QEMU)/mipsel-linux-user/qemu-mipsel $(EXECFLAGS) ConvolveHorizontally -idx 34
+	$(QEMU)/mipsel-linux-user/qemu-mipsel $(EXECFLAGS) ConvolveHorizontally -idx 36
 
 clean:
 	-rm *~ $(obj) *.o

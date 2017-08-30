@@ -136,7 +136,6 @@ void ConvolveHorizontally_MSA(const unsigned char* srcData, const SkConvolutionF
 void ConvolveHorizontally_C(const unsigned char* srcData, const SkConvolutionFilter1D& filter, unsigned char* outRow)
 {
 	int filterLength;
-	int accum[4] = {0};
 	int num = 0; 
 	int outX = 0;
 
@@ -144,7 +143,7 @@ void ConvolveHorizontally_C(const unsigned char* srcData, const SkConvolutionFil
 
 	for (outX = 0; outX < num; outX++)
     {
-
+		int accum[4] = {0};
 		const unsigned char* rowToFilter = filter.GetSrcAddr(outX);
 	    const SkConvolutionFilter1D::ConvolutionFixed* filterValues = filter.FilterForValue(outX, &filterLength);
 		//const unsigned char* rowToFilter = &srcData[filterOffset * 4];
