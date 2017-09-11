@@ -2,7 +2,7 @@
 
 GCC      = mips-img-linux-gnu-gcc 
 CPP      = mips-img-linux-gnu-g++ 
-CFLAGS   = -mmsa -mips32r6 -EL 
+CFLAGS   = -mmsa -mips32r6 -EL -flax-vector-conversions 
 CPPFLAGS = -mmsa -mips32r6 -EL -flax-vector-conversions -static 
 LDFLAGS  = -EL -static
 
@@ -47,6 +47,9 @@ CK_BlitRow:
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) S32A_Opaque_BlitRow32 -idx 1068 -count 4892
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) S32A_Opaque_BlitRow32 -idx 99 -count 28
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) S32A_Opaque_BlitRow32 -idx 796 -count 4876
+	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) S32A_Opaque_BlitRow32 -idx 3570 -count 1024
+	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) S32A_Opaque_BlitRow32 -idx 4570 -count 40
+	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) S32A_Opaque_BlitRow32 -idx 2530 -count 1024 
 
 CK_DXpart:
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) DX_shaderproc_part -idx 40 -count 112

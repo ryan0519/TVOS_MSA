@@ -5,6 +5,14 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <msa.h>
+
+typedef unsigned U8CPU;
+typedef uint32_t SkPMColor;
+
+#define SK_RESTRICT __restrict__
+#define SkASSERT(a)
+
 uint32_t SkAlphaMulQ(uint32_t c, unsigned scale) {
 	uint32_t mask = 0xFF00FF;
 	uint32_t rb = (((c & mask) * scale) & 0xffffffff ) >> 8;
@@ -14,7 +22,36 @@ uint32_t SkAlphaMulQ(uint32_t c, unsigned scale) {
 static uint32_t SkPMSrcOver(uint32_t src, uint32_t dst) {
     return src + SkAlphaMulQ(dst, 256 - (uint32_t)(src >> 24)  );
 }
-void S32A_Opaque_BlitRow32(uint32_t* __restrict__ dst, const uint32_t* __restrict__ src, int cnt, unsigned alpha) 
+
+static void S32A_Opaque_BlitRow32_mips_msa(SkPMColor* SK_RESTRICT dst, const SkPMColor* SK_RESTRICT src, int count, U8CPU alpha) {
+    SkASSERT(255 == alpha);
+    v4i32 v0 = __builtin_msa_fill_w(0);
+    v4i32 v_256 = __builtin_msa_fill_w(256);
+    while (count > 3) {
+	    v4i32 v1 = __builtin_msa_ld_w((void*)src, 0);
+	    v4i32 v2 = __builtin_msa_ld_w(dst, 0);
+        v4i32 v3 = __builtin_msa_srli_w(v1, 24);
+        v3 = __builtin_msa_subv_w(v_256, v3);
+        v3 = __builtin_msa_ilvev_h(v3, v3);
+        v4i32 v4 = __builtin_msa_ilvod_b(v0, v2);
+        v2 = __builtin_msa_ilvev_b(v0, v2);
+        v4 = __builtin_msa_mulv_h(v4, v3);
+        v2 = __builtin_msa_mulv_h(v2, v3);
+        src += 4;
+        v2 = __builtin_msa_ilvod_b(v4, v2);
+        count -= 4;
+        v1 = __builtin_msa_addv_w(v1, v2);
+        __builtin_msa_st_w(v1, dst, 0);
+        dst += 4;
+	}
+	while (count > 0) {
+	    *dst = SkPMSrcOver(*(src++), *dst);
+	    dst += 1;
+	    count -= 1;
+    }
+}
+
+void S32A_Opaque_BlitRow32_mcw(uint32_t* __restrict__ dst, const uint32_t* __restrict__ src, int cnt, unsigned alpha) 
 {
 
 	int tail          = (cnt & 0x3) ;   // cnt %  4
@@ -117,6 +154,7 @@ int testCase(char* idx, int count )
 	uint32_t ar2[1223] = {7,6,5,4,3,2,1,0};
 	uint32_t outMSA[1223] ;
 	uint32_t outC  [1223] ;
+	uint32_t outMCW[1223] ;
 
 	int i;  
 
@@ -144,13 +182,14 @@ int testCase(char* idx, int count )
 	
 	memcpy((char*)outMSA, (char*)src2, count*sizeof(uint32_t));
 	memcpy((char*)outC,   (char*)src2, count*sizeof(uint32_t));
+	memcpy((char*)outMCW, (char*)src2, count*sizeof(uint32_t));
 
     gettimeofday(&st, NULL);
-	S32A_Opaque_BlitRow32(outMSA, src1, count, 0xff);
+	S32A_Opaque_BlitRow32_mcw(outMCW, src1, count, 0xff);
 	gettimeofday(&end,NULL);
     diff = end.tv_sec*1000000 + end.tv_usec - st.tv_sec*1000000 - st.tv_usec;
 	Sum_Time(diff);
-	printf("MSA tv_sec:%d tv_us:%d \n", total.tv_sec, total.tv_usec);
+	printf("MCW tv_sec:%d tv_us:%d \n", total.tv_sec, total.tv_usec);
     
 	gettimeofday(&st, NULL);
 	S32A_Opaque_BlitRow32_c ( outC, src1, count, 0xff);
@@ -159,11 +198,24 @@ int testCase(char* idx, int count )
 	Sum_Time(diff);
 	printf("C   tv_sec:%d tv_us:%d \n", total.tv_sec, total.tv_usec);
 	
+    gettimeofday(&st, NULL);
+	S32A_Opaque_BlitRow32_mips_msa(outMSA, src1, count, 0xff);
+	gettimeofday(&end,NULL);
+    diff = end.tv_sec*1000000 + end.tv_usec - st.tv_sec*1000000 - st.tv_usec;
+	Sum_Time(diff);
+	printf("MSA tv_sec:%d tv_us:%d \n", total.tv_sec, total.tv_usec);
+
 	for(i = 0; i<count; i++)
 	{
 		if(outMSA[i] != outC[i]) printf(" %d:%x:%x:%x ", i, outMSA[i],outC[i],ar2[i]);
 	}
 	printf("check S32A_Opaque_BlitRow32 %s MSA & C complete. Count: %d\n", idx, i*4);
+
+	for(i = 0; i<count; i++)
+	{
+		if(outMCW[i] != outC[i]) printf(" %d:%x:%x:%x ", i, outMSA[i],outC[i],ar2[i]);
+	}
+	printf("check S32A_Opaque_BlitRow32 %s MCW & C complete. Count: %d\n", idx, i*4);
 
 	memset(outC, 0, sizeof(char)*4*count);
 	fd = fopen(oname, "rb");
