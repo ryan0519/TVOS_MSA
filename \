@@ -4,11 +4,6 @@
 #include <sys/time.h>
 #include <stdint.h>
 
-#include <msa.h>
-
-#define SK_RESTRICT __restrict__
-#define SkASSERT(a)
-
 static void sk_memset32_portable(int32_t * __restrict__ dst, const int32_t value, int cnt)
 {
 
@@ -135,8 +130,7 @@ void sk_memset32_mips_msa(uint32_t *dst, uint32_t value, int count)
 			 	*dst++ = value;
 				 --count;
 		 	}
-		 	//v4i32 *d = reinterpret_cast<v4i32*>(dst);
-		 	v4i32 *d =(v4i32*)(dst);
+		 	v4i32 *d = reinterpret_cast<v4i32*>(dst);
 		 	v4i32 value_wide = __builtin_msa_fill_w(value);
 		 	while (count >= 16) {
 				__builtin_msa_st_w(value_wide, (char*) d     , 0);
@@ -146,8 +140,7 @@ void sk_memset32_mips_msa(uint32_t *dst, uint32_t value, int count)
 			 	d += 4;
 				count -= 16;
 		 	}
-		 	//dst = reinterpret_cast<uint32_t*>(d);
-		 	dst = (uint32_t*)(d);
+		 	dst = reinterpret_cast<uint32_t*>(d);
 	 		}
 		 	while (count > 0) {
 				 *dst++ = value;

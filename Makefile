@@ -16,7 +16,7 @@ OBJ    := $(SRC:%.c=%.o)
 TARGET := $(SRC:%.c=%)
 
 
-CPPSRC := ConvolveHorizontally.cpp
+CPPSRC := ConvolveHorizontally.cpp 
 CPPOBJ := $(CPPSRC:%.cpp=%.o) 
 CPPEXE := $(CPPOBJ:%.o=%)
 
@@ -60,6 +60,7 @@ CK_MMSET:
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) sk_memset32 -idx 213 -count 28
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) sk_memset32 -idx 3 -count 1016
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) sk_memset32 -idx 56 -count 348
+	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) sk_memset32 -idx 911 -count 1184
 
 CK_CVH:
 	$(QEMU)/mipsel-linux-user/qemu-mipsel $(QEMUFLAGS) ConvolveHorizontally -idx 33
